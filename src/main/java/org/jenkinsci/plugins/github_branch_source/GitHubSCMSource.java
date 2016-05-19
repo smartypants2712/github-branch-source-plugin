@@ -251,7 +251,7 @@ public class GitHubSCMSource extends AbstractGitSCMSource {
 
         listener.getLogger().format("%n  Getting remote branches...%n");
         int branches = 0;
-        for (Map.Entry<String,GHBranch> entry : repo.getBranches().entrySet()) {
+        /*for (Map.Entry<String,GHBranch> entry : repo.getBranches().entrySet()) {
             final String branchName = entry.getKey();
             if (isExcluded(branchName)) {
                 continue;
@@ -273,7 +273,8 @@ public class GitHubSCMSource extends AbstractGitSCMSource {
                 return;
             }
             branches++;
-        }
+        }*/
+        listener.getLogger().format("    Skipping all branches");
         listener.getLogger().format("%n  %d branches were processed%n", branches);
 
         listener.getLogger().format("%n  Getting remote pull requests...%n");
@@ -431,11 +432,13 @@ public class GitHubSCMSource extends AbstractGitSCMSource {
      * @see <a href="http://stackoverflow.com/questions/15096331/github-api-how-to-find-the-branches-of-a-pull-request#comment54931031_15096596">base revision oddity</a>
      */
     private @CheckForNull String trustedReplacement(@Nonnull GHRepository repo, @Nonnull GHPullRequest ghPullRequest) throws IOException {
-        if (repo.getCollaboratorNames().contains(ghPullRequest.getUser().getLogin())) {
+        /* Disable check - consider all PR to come from trusted source */
+        /*if (repo.getCollaboratorNames().contains(ghPullRequest.getUser().getLogin())) {
             return null;
         } else {
             return ghPullRequest.getBase().getSha();
-        }
+        }*/
+        return null;
     }
 
     @Extension public static class DescriptorImpl extends SCMSourceDescriptor {
