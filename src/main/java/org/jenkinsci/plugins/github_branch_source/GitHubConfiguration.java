@@ -44,6 +44,7 @@ import org.kohsuke.stapler.StaplerRequest;
     }
 
     private List<Endpoint> endpoints;
+    private boolean allowSameOriginPRs;
 
     public GitHubConfiguration() {
         load();
@@ -51,7 +52,16 @@ import org.kohsuke.stapler.StaplerRequest;
 
     @Override public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
         req.bindJSON(this, json);
+        save();
         return true;
+    }
+
+    public boolean getAllowSameOriginPRs() {
+        return allowSameOriginPRs;
+    }
+
+    public void setAllowSameOriginPRs(boolean allowSameOriginPRs) {
+        this.allowSameOriginPRs = allowSameOriginPRs;
     }
 
     @NonNull

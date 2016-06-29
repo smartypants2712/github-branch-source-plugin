@@ -83,6 +83,7 @@ import java.util.logging.Logger;
 
 import static hudson.model.Items.XSTREAM2;
 
+
 public class GitHubSCMSource extends AbstractGitSCMSource {
 
     private final String apiUri;
@@ -251,7 +252,7 @@ public class GitHubSCMSource extends AbstractGitSCMSource {
 
         listener.getLogger().format("%n  Getting remote branches...%n");
         int branches = 0;
-        /*for (Map.Entry<String,GHBranch> entry : repo.getBranches().entrySet()) {
+        for (Map.Entry<String,GHBranch> entry : repo.getBranches().entrySet()) {
             final String branchName = entry.getKey();
             if (isExcluded(branchName)) {
                 continue;
@@ -273,7 +274,7 @@ public class GitHubSCMSource extends AbstractGitSCMSource {
                 return;
             }
             branches++;
-        }*/
+        }
         listener.getLogger().format("    Skipping all branches");
         listener.getLogger().format("%n  %d branches were processed%n", branches);
 
@@ -283,10 +284,10 @@ public class GitHubSCMSource extends AbstractGitSCMSource {
             PullRequestSCMHead head = new PullRequestSCMHead(ghPullRequest);
             final String branchName = head.getName();
             listener.getLogger().format("%n    Checking pull request %s%n", HyperlinkNote.encodeTo(ghPullRequest.getHtmlUrl().toString(), "#" + branchName));
-            /*if (repo.getOwner().equals(ghPullRequest.getHead().getUser())) {
+            if (!GitHubConfiguration.get().getAllowSameOriginPRs() && repo.getOwner().equals(ghPullRequest.getHead().getUser())) {
                 listener.getLogger().format("    Submitted from origin repository, skipping%n%n");
                 continue;
-            }*/
+            }
             if (criteria != null) {
                 SCMSourceCriteria.Probe probe = getProbe(branchName, "pull request", "refs/pull/" + head.getNumber() + "/head", repo, listener);
                 if (criteria.isHead(probe, listener)) {
@@ -432,13 +433,11 @@ public class GitHubSCMSource extends AbstractGitSCMSource {
      * @see <a href="http://stackoverflow.com/questions/15096331/github-api-how-to-find-the-branches-of-a-pull-request#comment54931031_15096596">base revision oddity</a>
      */
     private @CheckForNull String trustedReplacement(@Nonnull GHRepository repo, @Nonnull GHPullRequest ghPullRequest) throws IOException {
-        /* Disable check - consider all PR to come from trusted source */
-        /*if (repo.getCollaboratorNames().contains(ghPullRequest.getUser().getLogin())) {
+        if (GitHubConfiguration.get().getAllowSameOriginPRs() || repo.getCollaboratorNames().contains(ghPullRequest.getUser().getLogin())) {
             return null;
         } else {
             return ghPullRequest.getBase().getSha();
-        }*/
-        return null;
+        }
     }
 
     @Extension public static class DescriptorImpl extends SCMSourceDescriptor {

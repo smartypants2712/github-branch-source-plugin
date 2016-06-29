@@ -10,5 +10,8 @@
                 </f:entry>
             </f:repeatableProperty>
         </f:entry>
+        <f:entry title="${%Allow PRs from Same Origin}" field="allowSameOriginPRs">
+            <f:checkbox/>
+        </f:entry>
     </f:section>
 </j:jelly>
